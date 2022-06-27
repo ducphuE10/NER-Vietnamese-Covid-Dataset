@@ -4,23 +4,32 @@ from model import lstm_crf
 from train import Trainer
 from torch.optim import Adam
 import matplotlib.pyplot as plt
+import gensim
+from visualize import bar_chart
 
+level = 'word'
+device = 'cuda:0'
+w2v_path = 'word2vec_vi_words_300dims/word2vec_vi_words_300dims.txt'
+# wv_model = gensim.models.KeyedVectors.load_word2vec_format(w2v_path)
 
-device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+corpus = Dataset(train_path=f'./PhoNER_COVID19/data/{level}/train_{level}.conll',
+                 val_path=f'./PhoNER_COVID19/data/{level}/dev_{level}.conll',
+                 test_path=f'./PhoNER_COVID19/data/{level}/test_{level}.conll',
+                 batch_size=36,
+                 lower_word = True,
+                 wv_model = None,
+                 )
 
-corpus = Dataset(train_path='./PhoNER_COVID19/data/word/train_word.conll',
-                 val_path='./PhoNER_COVID19/data/word/dev_word.conll',
-                 test_path='./PhoNER_COVID19/data/word/test_word.conll',
-                 batch_size=64)
+# bar_chart(corpus.train_dataset)
 
 model = lstm_crf(
     word_input_dim=len(corpus.word_field.vocab),
     word_embedding_dim=300,
-    char_embedding_dim=25,
+    char_embedding_dim=50,
     char_input_dim=len(corpus.char_field.vocab),
     char_cnn_filter_num=5,
     char_cnn_kernel_size=3,
-    lstm_hidden_dim=64,
+    lstm_hidden_dim=200,
     output_dim=len(corpus.tag_field.vocab),
     lstm_layers=2,
     char_emb_dropout=0.5,
@@ -34,6 +43,11 @@ model = lstm_crf(
     use_char= True
 )
 
+
+# model.init_embeddings(
+#     pretrained=corpus.word_field.vocab.vectors,
+#     freeze=True
+# )
 
 model.init_embeddings()
 
@@ -51,6 +65,6 @@ trainer = Trainer(
     device = device
 )
 
-history =  trainer.train(2)
+history =  trainer.train(30)
 
 print(history)

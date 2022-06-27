@@ -1,0 +1,7 @@
+.ipynb_checkpoints
+test.py
+word2vec_vi_syllables_300dims
+word2vec_vi_words_300dims
+augmentation.py
+visualize.py
+pretrained

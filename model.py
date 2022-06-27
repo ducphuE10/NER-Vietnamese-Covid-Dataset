@@ -107,16 +107,23 @@ class Embedding_layer(nn.Module):
             char_emb_cnn = char_emb_cnn.permute(1, 0, 2)
             # Concat word_emb and char_emb_cnn to get word_features
             # Shape [sentence length, batch size, word emb dim + out channels]
-            # print(char_emb_cnn.is_cuda, word_emb.is_cuda)
             word_features = torch.cat((word_emb, char_emb_cnn), dim=2)
 
         return word_features
 
-    def init_embeddings(self):
+    def init_embeddings(self,pretrained = None, freeze = False):
         # initialize embedding for padding as zero
         self.word_embedding.weight.data[self.word_pad_idx] = torch.zeros(self.word_embedding_dim)
         if self.use_char:
             self.char_embedding.weight.data[self.char_pad_idx] = torch.zeros(self.char_embedding_dim)
+
+        if pretrained is not None:
+            print("Use pretrain W2V")
+            self.word_embedding = nn.Embedding.from_pretrained(
+                embeddings=torch.as_tensor(pretrained),
+                padding_idx=self.word_pad_idx,
+                freeze=freeze
+            )
 
 
 class CRF_layer(nn.Module):
@@ -127,7 +134,7 @@ class CRF_layer(nn.Module):
         self.linear_dropout = nn.Dropout(fc_dropout)
         self.crf = CRF(num_tags=output_dim)
 
-    def forward(self, lstm_features, tags):
+    def forward(self, lstm_features, tags = None):
         fc_out = self.linear_dropout(self.linear(lstm_features))
 
         # For training
@@ -243,6 +250,7 @@ class lstm_crf(nn.Module):
 
     def forward(self, words, chars, tags=None):
         word_features = self.embedding_layer(words, chars)
+        # lstm_features = [sentence length, batch size, hidden dim * 2]
         lstm_features, _ = self.lstm(word_features)
         crf_out, crf_loss = self.crf_layer(lstm_features, tags)
 
@@ -251,8 +259,8 @@ class lstm_crf(nn.Module):
     def init_crf_transitions(self, tag_list):
         self.crf_layer.init_crf_transitions(tag_list, imp_value=-1e4)
 
-    def init_embeddings(self):
-        self.embedding_layer.init_embeddings()
+    def init_embeddings(self,pretrained = None, freeze = False):
+        self.embedding_layer.init_embeddings(pretrained = pretrained, freeze = freeze)
 
     def save_state(self, path):
         torch.save(self.state_dict(), path)

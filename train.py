@@ -6,7 +6,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 class Trainer(object):
 
-    def __init__(self, model, data, optimizer, device, loss_fn_cls=None, path='pretrained/model2.pt'):
+    def __init__(self, model, data, optimizer, device, loss_fn_cls=None, path='pretrained/model.pt'):
         self.device = device
         self.model = model.to(device)
         self.data = data
@@ -73,7 +73,7 @@ class Trainer(object):
 
         lr_scheduling = ReduceLROnPlateau(
             optimizer=self.optimizer,
-            patience=4,
+            patience=5,
             factor=0.3,
             mode="max",
             verbose=True
@@ -143,23 +143,26 @@ class Trainer(object):
 
             lr_scheduling.step(epoch_f1_val)
 
-            history['val_loss'].append(epoch_loss_val)
-            history['val_f1'].append(epoch_f1_val)
-            history['val_sent_acc'].append(epoch_sent_acc_val)
+
 
             print(
                 f"\tVal F1: {epoch_f1_val * 100:.2f} | Val loss: {epoch_loss_val:.2f} | Sent acc: {epoch_sent_acc_val * 100: .2f}")
 
 
-            if epoch_f1_val > previous_f1:
-                print(f"F1 score increases from {previous_f1*100: .2f}% to {epoch_f1_val*100: .2f}%, saved model")
+            if epoch > 0 and epoch_f1_val > max(history['val_f1']):
+            # if epoch_f1_val > previous_f1:
+                print(f"F1 score increases from {max(history['val_f1'])*100: .2f}% to {epoch_f1_val*100: .2f}%, saved model")
                 torch.save({
                     # 'epoch': epoch,
                     'model_state_dict': self.model.state_dict(),
                     # 'optimizer_state_dict': self.optimizer.state_dict(),
                     # 'loss': loss
                 }, self.path)
-            previous_f1 = epoch_f1_val
+
+            history['val_loss'].append(epoch_loss_val)
+            history['val_f1'].append(epoch_f1_val)
+            history['val_sent_acc'].append(epoch_sent_acc_val)
+            # previous_f1 = epoch_f1_val
 
             print("-----------------------------------------------------")
         return history
