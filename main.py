@@ -12,12 +12,13 @@ device = 'cuda:0'
 w2v_path = 'word2vec_vi_words_300dims/word2vec_vi_words_300dims.txt'
 # wv_model = gensim.models.KeyedVectors.load_word2vec_format(w2v_path)
 
-corpus = Dataset(train_path=f'./PhoNER_COVID19/data/{level}/train_{level}.conll',
-                 val_path=f'./PhoNER_COVID19/data/{level}/dev_{level}.conll',
-                 test_path=f'./PhoNER_COVID19/data/{level}/test_{level}.conll',
+corpus = Dataset(train_path=f'dataset/train_{level}_update.conll',
+                 val_path=f'dataset/dev_{level}.conll',
+                 test_path=f'dataset/test_{level}.conll',
                  batch_size=36,
                  lower_word = True,
                  wv_model = None,
+                 aug_train=False
                  )
 
 # bar_chart(corpus.train_dataset)
@@ -29,7 +30,7 @@ model = lstm_crf(
     char_input_dim=len(corpus.char_field.vocab),
     char_cnn_filter_num=5,
     char_cnn_kernel_size=3,
-    lstm_hidden_dim=200,
+    lstm_hidden_dim=100,
     output_dim=len(corpus.tag_field.vocab),
     lstm_layers=2,
     char_emb_dropout=0.5,
@@ -45,7 +46,7 @@ model = lstm_crf(
 
 
 # model.init_embeddings(
-#     pretrained=corpus.word_field.vocab.vectors,
+#     pretrain=corpus.word_field.vocab.vectors,
 #     freeze=True
 # )
 
@@ -62,9 +63,11 @@ trainer = Trainer(
     model=model,
     data=corpus,
     optimizer=Adam,
-    device = device
+    device = device,
+    path='pretrain/model.pt'
 )
 
-history =  trainer.train(30)
+history =  trainer.train(5)
 
 print(history)
+
