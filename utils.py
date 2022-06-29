@@ -20,8 +20,8 @@ def read_file(path, data_fields, aug=False):
 
                 '''AUGMENTATION'''
                 if aug:
-                    # if "B-AGE" in tags and "I-AGE" not in tags and randint(0, 1):
-                    if "B-AGE" in tags and "I-AGE" not in tags:
+                    if "B-AGE" in tags and "I-AGE" not in tags and randint(0, 1):
+                    # if "B-AGE" in tags and "I-AGE" not in tags:
                         b_age_index = tags.index("B-AGE")
                         i_age_instance = ["ngày", "tháng", "năm"]
                         i_age_insert = i_age_instance[random.randint(0, 2)]
@@ -39,7 +39,8 @@ def read_file(path, data_fields, aug=False):
 
                     words_aug, tags_aug = aug_replace_in_same_tag(words, tags, 'JOB', JOBS)
 
-                    if words_aug and randint(0, 1):
+                    # if words_aug and randint(0, 1):
+                    if words_aug:
                         examples.append(torchtext.data.Example.fromlist([words_aug, tags_aug], data_fields))
                 '''END'''
 
