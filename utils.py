@@ -6,7 +6,7 @@ import random
 
 def read_file(path, data_fields, aug=False):
     if aug:
-        train_data = get_train_data()
+        train_data = get_train_data(path)
         SYMPTOM_AND_DISEASE = get_instances_by_tag(train_data, 'SYMPTOM_AND_DISEASE')
         JOBS = get_instances_by_tag(train_data, 'JOB')
 
