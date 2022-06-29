@@ -1,7 +1,7 @@
 from collections import Counter
 import matplotlib.pyplot as plt
 
-path = './PhoNER_COVID19/data/word/train_word.conll'
+path = 'dataset/train_word_update.conll'
 examples = []
 with open(path, encoding='utf-8') as f:
     words = []
@@ -17,9 +17,6 @@ with open(path, encoding='utf-8') as f:
             words.append(columns[0])
             tags.append(columns[-1])
 
-"AUGMENT"
-# examples = aug_i_age(examples)
-"...."
 def bar_chart(examples):
     labels = []
     for i in examples:
@@ -82,9 +79,9 @@ def pos_neg_bar(example):
 
     return num_pos, len(example) - num_pos
 
-print(pos_neg_bar(examples))
-
-bar_chart(examples)
+# print(pos_neg_bar(examples))
+#
+# bar_chart(examples)
 
 
 

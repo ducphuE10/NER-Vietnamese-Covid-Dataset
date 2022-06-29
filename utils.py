@@ -1,7 +1,15 @@
 import torchtext
 from random import randint
+from augmentation import get_instances_by_tag, aug_replace_in_same_tag, get_train_data
+import random
 
-def read_file(path, data_fields, aug = False):
+
+def read_file(path, data_fields, aug=False):
+    if aug:
+        train_data = get_train_data()
+        SYMPTOM_AND_DISEASE = get_instances_by_tag(train_data, 'SYMPTOM_AND_DISEASE')
+        JOBS = get_instances_by_tag(train_data, 'JOB')
+
     with open(path, encoding='utf-8') as f:
         examples = []
         words = []
@@ -9,11 +17,31 @@ def read_file(path, data_fields, aug = False):
         for line in f:
             line = line.strip()
             if not line:
-                #Augment for I-AGE
-                if aug == True:
-                    words_aug, tags_aug = 0,0
 
+                '''AUGMENTATION'''
+                if aug:
+                    # if "B-AGE" in tags and "I-AGE" not in tags and randint(0, 1):
+                    if "B-AGE" in tags and "I-AGE" not in tags:
+                        b_age_index = tags.index("B-AGE")
+                        i_age_instance = ["ngày", "tháng", "năm"]
+                        i_age_insert = i_age_instance[random.randint(0, 2)]
 
+                        words.insert(b_age_index + 1, i_age_insert)
+                        tags.insert(b_age_index + 1, "I-AGE")
+
+                    # AUG SYMPTOM_AND_DISEASE
+                    # words_aug, tags_aug = aug_replace_in_same_tag(words, tags, 'SYMPTOM_AND_DISEASE',
+                    #                                               SYMPTOM_AND_DISEASE)
+
+                    # if words_aug:
+                    #     # print(words_aug)
+                    #     examples.append(torchtext.data.Example.fromlist([words_aug, tags_aug], data_fields))
+
+                    words_aug, tags_aug = aug_replace_in_same_tag(words, tags, 'JOB', JOBS)
+
+                    if words_aug and randint(0, 1):
+                        examples.append(torchtext.data.Example.fromlist([words_aug, tags_aug], data_fields))
+                '''END'''
 
                 examples.append(torchtext.data.Example.fromlist([words, tags], data_fields))
                 words = []
@@ -35,10 +63,6 @@ def normalize_word(word):
         else:
             new_word += char
     return new_word
-
-
-def extract_instances_of_tag(tag, path):
-    pass
 
 
 def get_sent_by_tag(tag, path):

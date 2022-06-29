@@ -5,8 +5,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
 class Trainer(object):
-
-    def __init__(self, model, data, optimizer, device, loss_fn_cls=None, path='pretrained/model.pt'):
+    def __init__(self, model, data, optimizer, device, loss_fn_cls=None, path='pretrain/model.pt'):
         self.device = device
         self.model = model.to(device)
         self.data = data
@@ -148,10 +147,11 @@ class Trainer(object):
             print(
                 f"\tVal F1: {epoch_f1_val * 100:.2f} | Val loss: {epoch_loss_val:.2f} | Sent acc: {epoch_sent_acc_val * 100: .2f}")
 
-
-            if epoch > 0 and epoch_f1_val > max(history['val_f1']):
+            if epoch == N-1 and self.path:
+            # if epoch > 0 and epoch_f1_val > max(history['val_f1']):
             # if epoch_f1_val > previous_f1:
-                print(f"F1 score increases from {max(history['val_f1'])*100: .2f}% to {epoch_f1_val*100: .2f}%, saved model")
+            #     print(f"F1 score increases from {max(history['val_f1'])*100: .2f}% to {epoch_f1_val*100: .2f}%, saved model")
+                print(f"model is saved in {self.path}")
                 torch.save({
                     # 'epoch': epoch,
                     'model_state_dict': self.model.state_dict(),
@@ -166,3 +166,6 @@ class Trainer(object):
 
             print("-----------------------------------------------------")
         return history
+
+
+
