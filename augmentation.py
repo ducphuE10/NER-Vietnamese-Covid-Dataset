@@ -1,7 +1,6 @@
 from random import randint
 
 def get_train_data(path):
-    # path = 'PhoNER_COVID19/data/word/train_word.conll'
     train_data = []
     with open(path, encoding='utf-8') as f:
         words = []
