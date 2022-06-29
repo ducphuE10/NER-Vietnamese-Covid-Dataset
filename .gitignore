@@ -3,7 +3,6 @@ test.py
 predict.ipynb
 word2vec_vi_syllables_300dims
 word2vec_vi_words_300dims
-augmentation.py
 visualize.py
 pretrain
 venv
