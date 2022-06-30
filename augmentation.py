@@ -1,22 +1,5 @@
 from random import randint
 
-def get_train_data(path):
-    train_data = []
-    with open(path, encoding='utf-8') as f:
-        words = []
-        tags = []
-        for line in f:
-            line = line.strip()
-            if not line:
-                train_data.append([words, tags])
-                words = []
-                tags = []
-            else:
-                columns = line.split()
-                words.append(columns[0])
-                tags.append(columns[-1])
-    return train_data
-
 def insert_position(position, list1, list2):
     return list1[:position] + list2 + list1[position:]
 

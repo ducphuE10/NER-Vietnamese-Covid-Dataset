@@ -47,7 +47,6 @@ class Dataset:
         else:
             self.word_field.build_vocab(self.train_dataset.word)
 
-        # self.word_field.build_vocab(self.train_dataset.word)
         self.tag_field.build_vocab(self.train_dataset.tag)
         self.char_field.build_vocab(self.train_dataset.char)
 

@@ -1,12 +1,29 @@
 import torchtext
 from random import randint
-from augmentation import get_instances_by_tag, aug_replace_in_same_tag, get_train_data
-import random
+from augmentation import get_instances_by_tag, aug_replace_in_same_tag
+
+def get_data(path):
+    train_data = []
+    with open(path, encoding='utf-8') as f:
+        words = []
+        tags = []
+        for line in f:
+            line = line.strip()
+            if not line:
+                train_data.append([words, tags])
+                words = []
+                tags = []
+            else:
+                columns = line.split()
+                words.append(columns[0])
+                tags.append(columns[-1])
+    return train_data
+
 
 
 def read_file(path, data_fields, aug=False):
     if aug:
-        train_data = get_train_data(path)
+        train_data = get_data(path)
         SYMPTOM_AND_DISEASE = get_instances_by_tag(train_data, 'SYMPTOM_AND_DISEASE')
         JOBS = get_instances_by_tag(train_data, 'JOB')
 
@@ -39,9 +56,10 @@ def read_file(path, data_fields, aug=False):
 
                     words_aug, tags_aug = aug_replace_in_same_tag(words, tags, 'JOB', JOBS)
 
-                    # if words_aug and randint(0, 1):
-                    if words_aug:
+                    if words_aug and randint(0, 1):
+                    # if words_aug:
                         examples.append(torchtext.data.Example.fromlist([words_aug, tags_aug], data_fields))
+
                 '''END'''
 
                 examples.append(torchtext.data.Example.fromlist([words, tags], data_fields))
