@@ -1,4 +1,6 @@
 from random import randint
+import random
+
 
 def insert_position(position, list1, list2):
     return list1[:position] + list2 + list1[position:]

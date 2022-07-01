@@ -1,6 +1,7 @@
 import torchtext
 from random import randint
 from augmentation import get_instances_by_tag, aug_replace_in_same_tag
+import random
 
 def get_data(path):
     train_data = []
