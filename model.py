@@ -270,3 +270,106 @@ class lstm_crf(nn.Module):
 
     def count_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+
+
+class lstm_attention_crf(nn.Module):
+    def __init__(self,
+                 word_input_dim,
+                 word_embedding_dim,
+                 char_input_dim,
+                 char_embedding_dim,
+                 char_cnn_filter_num,
+                 char_cnn_kernel_size,
+                 lstm_hidden_dim,
+                 output_dim,
+                 lstm_layers,
+                 attn_heads,
+
+                 char_emb_dropout,
+                 word_emb_dropout,
+                 cnn_dropout,
+                 lstm_dropout,
+                 fc_dropout,
+                 attn_dropout,
+
+                 word_pad_idx,
+                 char_pad_idx,
+                 tag_pad_idx,
+
+                 use_char = True):
+        super().__init__()
+        self.word_pad_idx = word_pad_idx
+        self.tag_pad_idx = tag_pad_idx
+        self.char_pad_idx = char_pad_idx
+        self.word_embedding_dim = word_embedding_dim
+        self.char_embedding_dim = char_embedding_dim
+
+        self.embedding_layer = Embedding_layer(word_input_dim=word_input_dim,
+                                               word_embedding_dim=word_embedding_dim,
+                                               char_input_dim=char_input_dim,
+                                               char_embedding_dim=char_embedding_dim,
+                                               char_cnn_filter_num=char_cnn_filter_num,
+                                               char_cnn_kernel_size=char_cnn_kernel_size,
+                                               word_pad_idx=word_pad_idx,
+                                               char_pad_idx=char_pad_idx,
+
+                                               char_emb_dropout=char_emb_dropout,
+                                               word_emb_dropout=word_emb_dropout,
+                                               cnn_dropout=cnn_dropout,
+                                               use_char=use_char,
+                                               )
+
+        self.lstm = nn.LSTM(
+            input_size=word_embedding_dim + use_char*(char_embedding_dim * char_cnn_filter_num),
+            hidden_size=lstm_hidden_dim,
+            num_layers=lstm_layers,
+            bidirectional=True,
+            dropout=lstm_dropout if lstm_layers > 1 else 0
+        )
+
+        self.attn = nn.MultiheadAttention(
+            embed_dim=lstm_hidden_dim * lstm_layers,
+            num_heads=attn_heads,
+            dropout=attn_dropout
+        )
+
+        self.crf_layer = CRF_layer(input_dim=lstm_hidden_dim * lstm_layers,
+                                   output_dim=output_dim,
+                                   fc_dropout=fc_dropout,
+                                   tag_pad_idx=tag_pad_idx)
+
+        for name, param in self.named_parameters():
+            nn.init.normal_(param.data, mean=0, std=0.1)
+
+    def forward(self, words, chars, tags=None):
+        word_features = self.embedding_layer(words, chars)
+        # lstm_features = [sentence length, batch size, hidden dim * 2]
+        lstm_features, _ = self.lstm(word_features)
+
+        ### BEGIN MODIFIED SECTION: ATTENTION ###
+        # create masking for paddings
+        # key_padding_mask = [batch size, sentence length]
+        key_padding_mask = torch.as_tensor(words == self.word_pad_idx).permute(1, 0)
+        # attn_out = [sentence length, batch size, hidden dim * 2]
+        # attn_weight = [batch size, sentence length, sentence length]
+        attn_out, attn_weight = self.attn(lstm_features, lstm_features, lstm_features, key_padding_mask=key_padding_mask)
+
+        crf_out, crf_loss = self.crf_layer(attn_out, tags)
+
+        return crf_out, crf_loss
+
+    def init_crf_transitions(self, tag_list):
+        self.crf_layer.init_crf_transitions(tag_list, imp_value=-1e4)
+
+    def init_embeddings(self,pretrained = None, freeze = False):
+        self.embedding_layer.init_embeddings(pretrained = pretrained, freeze = freeze)
+
+    def save_state(self, path):
+        torch.save(self.state_dict(), path)
+
+    def load_state(self, path):
+        self.load_state_dict(torch.load(path))
+
+    def count_parameters(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)

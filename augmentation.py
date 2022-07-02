@@ -1,6 +1,4 @@
 from random import randint
-import random
-
 
 def insert_position(position, list1, list2):
     return list1[:position] + list2 + list1[position:]
@@ -78,31 +76,6 @@ def aug_JOB_sent_insert_random(words, tags, job_list):
 
     return words, tags
 
-def get_instances_by_tag(train_data, tag):
-    '''
-        :param tag: ví dụ như JOB, ORGANIZATION, ....
-        :return:
-    '''
-    # print(dataset)
-    instances = [] # ví dụ job thì sẽ là: [[giáo viên], [công nhân], [y_tá, điều_dưỡng],...]
-    for ex in train_data:
-        tags = ex[1]
-        for i in range(len(tags)):
-            if tags[i] == f'B-{tag}':
-                j = i + 1
-                instance = [ex[0][i]]
-                while tags[j] == f'I-{tag}':
-                    instance.append(ex[0][j])
-                    j = j + 1
-                    if j >= len(tags):
-                        break
-
-                if instance not in instances:
-                    instances.append(instance)
-
-    return instances
-
-# dataset = get_train_data()
 #
 # SYMPTOM_AND_DISEASE = get_instances_by_tag(dataset, 'SYMPTOM_AND_DISEASE')
 # JOBS = get_instances_by_tag(dataset, 'JOB')
