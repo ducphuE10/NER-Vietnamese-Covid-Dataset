@@ -1,46 +1,56 @@
+import random
 from random import randint
+
+import visualize
+from utils import get_data, get_instances_by_tag
+from collections import Counter
+
+def remove_position(position, list1):
+    assert position < len(list1)
+    if position == len(list1)-1:
+        return list1[:-1]
+    return list1[:position] + list1[position+1:]
 
 def insert_position(position, list1, list2):
     return list1[:position] + list2 + list1[position:]
 
+
 def replace_position(position, list1, list2, length):
-    return list1[:position] + list2 + list1[position + length :]
-
-def aug_i_age(train_data):
-    for i in range(len(train_data)):
-        tags = train_data[i][1]
-        if "B-AGE" in tags and "I-AGE" not in tags and randint(0, 1):
-            b_age_index = tags.index("B-AGE")
-            train_data[i][0].insert(b_age_index + 1, "tháng")
-            train_data[i][1].insert(b_age_index + 1, "I-AGE")
-            # print(ex[0])
-
-    return train_data
+    '''
+    :param position: vị trí cần thay thế ở list1, ví dụ vị trí 1
+    :param list1: ví dụ [anh, công_nhân, sửa_chữa, ống, nước, may_mắn]
+    :param list2: list mà thay thế vị trí cần chèn
+    :param length:
+    :return:
+    '''
+    return list1[:position] + list2 + list1[position + length:]
 
 
-def aug_I_AGE_sent(words, tags, i_age_list):
-    if "B-AGE" in tags and "I-AGE" not in tags and randint(0, 1):
-        b_age_index = tags.index("B-AGE")
-        words.insert(b_age_index + 1, "tháng")
-        tags.insert(b_age_index + 1, "I-AGE")
+def insert_I_AGE(word, tag):
+    if "B-AGE" in tag and "I-AGE" not in tag:
+        b_age_index = tag.index("B-AGE")
+        i_age_instance = ["ngày", "tháng", "năm"]
+        i_age_insert = i_age_instance[random.randint(0, 2)]
 
-    return words, tags
+        word[b_age_index] = randint(1, 80)
+        word.insert(b_age_index + 1, i_age_insert)
+        tag.insert(b_age_index + 1, "I-AGE")
+    return word, tag
 
 
-def aug_replace_in_same_tag(words, tags, tag_aug, tag_instances):
+def replace_in_same_tag(word, tag, tag_aug, tag_instances):
     '''
     :param tag_instances:
-    :param words: list of words in sent []
-    :param tags: list of tag in sent []
+    :param word: list of words in sent []
+    :param tag: list of tag in sent []
     :param tag_aug: tag_need to aug
     :return: [words,tags] after replace
     '''
-    words_aug = words
-    tags_aug = tags
-    # if f"B-{tag_aug}" in tags and randint(0, 1):
-    if f"B-{tag_aug}" in tags:
-        b_indexes = [i for i, x in enumerate(tags) if x == f'B-{tag_aug}']
-        # print(len(b_indexes))
+    words_aug = word
+    tags_aug = tag
+
+    if f"B-{tag_aug}" in tag:
+        b_indexes = [i for i, x in enumerate(tag) if x == f'B-{tag_aug}']
         for i in range(len(b_indexes)):
             b_index = b_indexes[i]
             i_index = b_index + 1
@@ -51,46 +61,75 @@ def aug_replace_in_same_tag(words, tags, tag_aug, tag_instances):
 
             index_replace = randint(0, len(tag_instances) - 1)
             tag_replace = tag_instances[index_replace]
-            # print(tag_replace)
-            words_aug = replace_position(b_index, words_aug, tag_replace,i_index- b_index)
-            tags_aug = replace_position(b_index,tags_aug, [f'B-{tag_aug}'] + (len(tag_replace)-1)*[f'I-{tag_aug}'],i_index- b_index)
 
-            for j in range(i,len(b_indexes)-1):
-                b_indexes[j+1] += len(tag_replace) - (i_index- b_index)
+            words_aug = replace_position(b_index, words_aug, tag_replace, i_index - b_index)
+            tags_aug = replace_position(b_index, tags_aug, [f'B-{tag_aug}'] + (len(tag_replace) - 1) * [f'I-{tag_aug}'],
+                                        i_index - b_index)
 
-        # print("words before replace:", ' '.join(words))
-        # print("words after replace:", ' '.join(words_aug))
-        # print(list(zip(words_aug, tags_aug)))
-        # print("===============================")
+            for j in range(i, len(b_indexes) - 1):
+                b_indexes[j + 1] += len(tag_replace) - (i_index - b_index)
+
         return words_aug, tags_aug
 
     else:
-        return 0,0
+        return word, tag
 
 
-def aug_JOB_sent_insert_random(words, tags, job_list):
-    if "B-NAME" in tags and "B-JOB" not in tags and randint(0, 1):
-        b_name_index = tags.index("B-NAME")
-        words.insert(b_age_index + 1, "tháng")
-        tags.insert(b_age_index + 1, "I-AGE")
+def random_delete_outside(word, tag, num_delete=1):
+    word_aug = word
+    tag_aug = tag
+    for i in range(num_delete):
+        O_indexes = [j for j in range(len(tag_aug)) if tag_aug[j] == 'O']
+        if len(O_indexes) == 0:
+            break
+        index = O_indexes[randint(0, len(O_indexes) - 1)]
 
-    return words, tags
+        word_aug = remove_position(index, word_aug)
+        tag_aug = remove_position(index, tag_aug)
 
+    return word_aug,tag_aug
+
+
+
+
+
+train_data = get_data('dataset/train_word_update.conll')
+JOBS = get_instances_by_tag(train_data, 'JOB')
+NAME = get_instances_by_tag(train_data, 'NAME')
+TRANSPORT = get_instances_by_tag(train_data, 'TRANSPORTATION')
+
+
+train_data_aug = []
+for i,(word,tag) in enumerate(train_data):
+    if 'I-PATIENT_ID' in tag or 'I-NAME' in tag:
+        for j in range(10):
+            word_aug, tag_aug = random_delete_outside(word, tag, random.randint(1, 4))
+            train_data_aug.append([word_aug, tag_aug])
+
+    if randint(0, 1):
+        word,tag = insert_I_AGE(word,tag)
+    if 'B-JOB' in tag or 'B-TRANSPORTATION' in tag:
+        if 'B-LOCATION' not in tag:
+            for j in range(10):
+                word_aug, tag_aug = replace_in_same_tag(word, tag, 'JOB', JOBS)
+                word_aug, tag_aug = replace_in_same_tag(word_aug, tag_aug, 'TRANSPORTATION', TRANSPORT)
+                word_aug, tag_aug = random_delete_outside(word_aug, tag_aug, random.randint(1,4))
+                # word_aug, tag_aug = insert_I_AGE(word_aug, tag_aug)
+                assert len(word_aug) == len(tag_aug)
+                train_data_aug.append([word_aug,tag_aug])
+
+
+# visualize.bar_chart(train_data_aug)
+
+
+train_data.extend(train_data_aug)
 #
-# SYMPTOM_AND_DISEASE = get_instances_by_tag(dataset, 'SYMPTOM_AND_DISEASE')
-# JOBS = get_instances_by_tag(dataset, 'JOB')
-# #
-# # # print(len(dataset))
-# for ex in dataset[:]:
-#     words = ex[0]
-#     tags = ex[1]
 #
-#     words_aug,tags_aug = aug_replace_in_same_tag(words, tags, 'SYMPTOM_AND_DISEASE', SYMPTOM_AND_DISEASE)
-#     if words_aug:
-#         # print(words_aug)
-#         dataset.append([words_aug,tags_aug])
-#
-#     words_aug, tags_aug = aug_replace_in_same_tag(words, tags, 'JOB', JOBS)
-#     if words_aug:
-#         dataset.append([words_aug, tags_aug])
+with open('dataset/train_word_aug_phu.conll','w',encoding='utf-8') as f:
+    for word,tag in train_data:
+        assert len(word) == len(tag)
+        for i in range(len(word)):
+            f.write(f'{word[i]} {tag[i]}\n')
+        f.write('\n')
+
 

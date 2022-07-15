@@ -271,8 +271,6 @@ class lstm_crf(nn.Module):
     def count_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-
-
 class lstm_attention_crf(nn.Module):
     def __init__(self,
                  word_input_dim,

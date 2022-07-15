@@ -1,30 +1,14 @@
 from collections import Counter
 import matplotlib.pyplot as plt
-
-# path = 'dataset/train_word_update.conll'
-# examples = []
-# with open(path, encoding='utf-8') as f:
-#     words = []
-#     tags = []
-#     for line in f:
-#         line = line.strip()
-#         if not line:
-#             examples.append([words, tags])
-#             words = []
-#             tags = []
-#         else:
-#             columns = line.split()
-#             words.append(columns[0])
-#             tags.append(columns[-1])
+from utils import get_data
 
 def bar_chart(dataset):
     labels = []
-    # for i in examples:
     for i in dataset:
         labels.extend(i[1])
 
     count_label = Counter(labels)
-
+    count_label = dict(count_label.most_common())
     tags = list(count_label.keys())[1:]  # Except tag O
     values = list(count_label.values())[1:]
 
@@ -81,8 +65,8 @@ def pos_neg_bar(dataset):
     return num_pos, len(dataset) - num_pos
 
 # print(pos_neg_bar(examples))
-#
-# bar_chart(examples)
+
+
 
 
 

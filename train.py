@@ -1,5 +1,4 @@
 import torch
-import time
 from sklearn.metrics import f1_score, classification_report
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 

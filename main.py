@@ -3,9 +3,6 @@ from dataset import Dataset
 from model import lstm_crf
 from train import Trainer
 from torch.optim import Adam
-import matplotlib.pyplot as plt
-import gensim
-from visualize import bar_chart
 
 level = 'word'
 device = 'cuda:0'
