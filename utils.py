@@ -14,8 +14,8 @@ def get_data(path):
                 tags = []
             else:
                 columns = line.split()
-                words.append(columns[0])
-                tags.append(columns[-1])
+                words.append(str(columns[0]))
+                tags.append(str(columns[-1]))
     return train_data
 
 
