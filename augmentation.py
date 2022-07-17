@@ -34,7 +34,7 @@ def insert_I_AGE(word, tag):
         i_age_instance = ["ngày", "tháng", "năm"]
         i_age_insert = i_age_instance[random.randint(0, 2)]
 
-        word[b_age_index] = randint(1, 80)
+        word[b_age_index] = str(randint(1, 80))
         word.insert(b_age_index + 1, i_age_insert)
         tag.insert(b_age_index + 1, "I-AGE")
     return word, tag
