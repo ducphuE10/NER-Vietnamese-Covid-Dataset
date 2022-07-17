@@ -14613,11 +14613,11 @@ Bệnh_nhân O
 được O
 điều_trị O
 tại O
-Bệnh_viện B-PATIENT_ID
-Nhiệt_đới I-PATIENT_ID
-Trung_ương I-PATIENT_ID
-cơ_sở I-PATIENT_ID
-2 I-PATIENT_ID
+Bệnh_viện B-LOCATION
+Nhiệt_đới I-LOCATION
+Trung_ương I-LOCATION
+cơ_sở I-LOCATION
+2 I-LOCATION
 . O
 
 Ngày O

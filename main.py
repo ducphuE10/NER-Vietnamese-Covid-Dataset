@@ -14,8 +14,7 @@ corpus = Dataset(train_path=f'dataset/train_{level}_update.conll',
                  test_path=f'dataset/test_{level}.conll',
                  batch_size=36,
                  lower_word = True,
-                 wv_model = None,
-                 aug_train=False
+                 wv_model = None
                  )
 
 # bar_chart(corpus.train_dataset)

@@ -6,7 +6,7 @@ import torch
 
 
 class Dataset:
-    def __init__(self, train_path, val_path, test_path, batch_size, lower_word=True, wv_model=None, aug_train = True):
+    def __init__(self, train_path, val_path, test_path, batch_size, lower_word=True, wv_model=None):
         self.word_field = Field(lower=lower_word)
         self.tag_field = Field(unk_token=None)
 
@@ -15,9 +15,9 @@ class Dataset:
         self.data_fields = [(("word", "char"), (self.word_field, self.char_field)),
                             ("tag", self.tag_field)]
 
-        self.train_dataset = read_file(train_path, self.data_fields, aug = aug_train)
-        self.val_dataset = read_file(val_path, self.data_fields, aug = False)
-        self.test_dataset = read_file(test_path, self.data_fields, aug = False)
+        self.train_dataset = read_file(train_path, self.data_fields)
+        self.val_dataset = read_file(val_path, self.data_fields)
+        self.test_dataset = read_file(test_path, self.data_fields)
 
         if wv_model:
             # retrieve word2vec model from gensim library

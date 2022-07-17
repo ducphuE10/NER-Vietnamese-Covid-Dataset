@@ -5,11 +5,13 @@ import visualize
 from utils import get_data, get_instances_by_tag
 from collections import Counter
 
+
 def remove_position(position, list1):
     assert position < len(list1)
     if position == len(list1)-1:
         return list1[:-1]
     return list1[:position] + list1[position+1:]
+
 
 def insert_position(position, list1, list2):
     return list1[:position] + list2 + list1[position:]
@@ -91,7 +93,7 @@ def random_delete_outside(word, tag, num_delete=1):
 
 
 
-
+'''
 
 train_data = get_data('dataset/train_word_update.conll')
 JOBS = get_instances_by_tag(train_data, 'JOB')
@@ -119,12 +121,8 @@ for i,(word,tag) in enumerate(train_data):
                 train_data_aug.append([word_aug,tag_aug])
 
 
-# visualize.bar_chart(train_data_aug)
-
-
 train_data.extend(train_data_aug)
-#
-#
+
 with open('dataset/train_word_aug_phu.conll','w',encoding='utf-8') as f:
     for word,tag in train_data:
         assert len(word) == len(tag)
@@ -132,4 +130,4 @@ with open('dataset/train_word_aug_phu.conll','w',encoding='utf-8') as f:
             f.write(f'{word[i]} {tag[i]}\n')
         f.write('\n')
 
-
+'''

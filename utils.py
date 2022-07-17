@@ -19,7 +19,7 @@ def get_data(path):
     return train_data
 
 
-def read_file(path, data_fields, aug=False):
+def read_file(path, data_fields):
     with open(path, encoding='utf-8') as f:
         examples = []
         words = []
@@ -32,7 +32,6 @@ def read_file(path, data_fields, aug=False):
                 tags = []
             else:
                 columns = line.split()
-                # words.append(normalize_word(columns[0]))
                 words.append(columns[0])
                 tags.append(columns[-1])
 
@@ -95,16 +94,3 @@ def get_instances_by_tag(dataset, tag):
 
     return instances
 
-# examples = get_sent_by_tag('I-PATIENT_ID','PhoNER_COVID19/data/syllable/train_syllable.conll')
-# # print(examples)
-# for i in examples[0]:
-#     print(i)
-
-# print(len(examples[0][0]))
-# print(len(examples[0][1]))
-
-
-# dataset = get_data('dataset/test_word_origin.conll')
-# for i in get_instances_by_tag(dataset,'NAME'):
-#     if len(i) >1:
-#         print(i)

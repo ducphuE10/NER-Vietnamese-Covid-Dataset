@@ -2796,10 +2796,10 @@ nCoV O
 
 Phó O
 Giám_đốc O
-Sở B-SYMPTOM_AND_DISEASE
-Y_tế I-SYMPTOM_AND_DISEASE
-TP I-SYMPTOM_AND_DISEASE
-HCM I-SYMPTOM_AND_DISEASE
+Sở B-ORGANIZATION
+Y_tế I-ORGANIZATION
+TP I-ORGANIZATION
+HCM I-ORGANIZATION
 Tăng_Chí_Thượng O
 , O
 chiều O
@@ -37850,7 +37850,7 @@ Bệnh_nhân O
 251 B-PATIENT_ID
 " O
 , O
-64 B-GENDER
+64 B-AGE
 tuổi O
 , O
 trú O
@@ -38651,7 +38651,7 @@ hành_khách O
 cùng O
 chuyến O
 bay O
-VN814 B-ORGANIZATION
+VN814 B-TRANSPORTATION
 nhập_cảnh O
 vào O
 Việt_Nam B-LOCATION
@@ -54360,8 +54360,8 @@ Hàn_Quốc B-LOCATION
 2 I-DATE
 có O
 dấu_hiệu O
-rát B-DATE
-họng I-DATE
+rát B-SYMPTOM_AND_DISEASE
+họng I-SYMPTOM_AND_DISEASE
 , O
 ho B-DATE
 nhưng O
@@ -77186,7 +77186,8 @@ bệnh_nhân O
 sinh_sống O
 là O
 thôn B-LOCATION
-Bùi_( I-LOCATION
+Bùi I-LOCATION
+( O
 xã B-LOCATION
 Hoà_Tiến I-LOCATION
 , O
@@ -105387,7 +105388,7 @@ là O
 một O
 phụ_nữ B-GENDER
 ( O
-43 B-SYMPTOM_AND_DISEASE
+43 B-AGE
 tuổi O
 , O
 Trúc_Bạch B-LOCATION
@@ -105428,7 +105429,7 @@ Hiện O
 bệnh_nhân O
 595 B-PATIENT_ID
 ( O
-bà B-GENDER
+bà O
 P.T.T.Ng. B-NAME
 , O
 ngụ O
@@ -106378,7 +106379,9 @@ số O
 , O
 671 B-PATIENT_ID
 , O
-672,722 B-PATIENT_ID
+672 B-PATIENT_ID
+, O
+722 B-PATIENT_ID
 , O
 776 O
 , O
@@ -114642,7 +114645,8 @@ thêm O
 bệnh_nhân O
 thứ O
 3 O
-(N.T.T.N. O
+( O
+N.T.T.N. O
 29 O
 tuổi O
 , O
@@ -116146,7 +116150,9 @@ số O
 , O
 124 B-PATIENT_ID
 , O
-125,126 B-PATIENT_ID
+125 B-PATIENT_ID
+, O
+126 B-PATIENT_ID
 , O
 127 O
 . O
@@ -119864,7 +119870,9 @@ mã_số O
 , O
 726 B-PATIENT_ID
 , O
-732,733 B-PATIENT_ID
+732 B-PATIENT_ID
+, O
+733 B-PATIENT_ID
 , O
 734 O
 , O
@@ -131060,7 +131068,7 @@ mới O
 . O
 
 Ngày O
-28/3 B-LOCATION
+28/3 B-DATE
 , O
 chính_quyền O
 xã B-LOCATION
@@ -136354,7 +136362,7 @@ cộng_đồng O
 Đêm O
 6/3 B-DATE
 , O
-Hà_Nội B-ORGANIZATION
+Hà_Nội B-LOCATION
 ghi_nhận O
 một O
 trường_hợp O
