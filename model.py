@@ -81,7 +81,7 @@ class Embedding_layer(nn.Module):
             # print("char_emb shape: ",char_emb.shape)
 
             batch_size, sent_len, word_len, char_emb_dim = char_emb.shape
-            char_emb_cnn = torch.zeros(batch_size, sent_len, self.char_cnn.out_channels).to('cuda')
+            char_emb_cnn = torch.zeros(batch_size, sent_len, self.char_cnn.out_channels).to('cuda' if next(self.parameters()).is_cuda else 'cpu')
             for word_i in range(sent_len):
                 # Embedding of word belong with character
                 # char_emb_word_i = [batch size, word length, char emb dim]
